@@ -3,50 +3,51 @@ onmessage = function (evt) {
         this.canvas = evt.data.canvas;
         this.ctx = canvas.getContext("2d");
     } else {
-        if (evt.data[0].length) {
-            this.predictions = evt.data[0];
+        if (evt.data[0]) {
+            this.annotations = evt.data[0];
+            render()
         }
     }
     function render(time) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        if (predictions !== undefined && predictions.length > 0) {
+        if (annotations !== undefined) {
             ctx.beginPath();
-            for (let i = 0; i < predictions.length; i++) {
-                //Lips
-                const keypointsLipsUpperOuter = predictions[i].annotations.lipsUpperOuter;
-                const keypointsLipsLowerOuter = predictions[i].annotations.lipsLowerOuter;
-                const keypointsLipsUpperInner = predictions[i].annotations.lipsUpperInner;
-                const keypointsLipsLipsLowerInner = predictions[i].annotations.lipsLowerInner;
 
-                //Silhouette
-                const keypointsSilhouette = predictions[i].annotations.silhouette;
+            //Lips
+            const keypointsLipsUpperOuter = annotations.lipsUpperOuter;
+            const keypointsLipsLowerOuter = annotations.lipsLowerOuter;
+            const keypointsLipsUpperInner = annotations.lipsUpperInner;
+            const keypointsLipsLipsLowerInner = annotations.lipsLowerInner;
 
-                //Eyebrows
-                const keypointsRightEyebrowUpper = predictions[i].annotations.rightEyebrowUpper;
-                const keypointsRightEyebrowLower = predictions[i].annotations.rightEyebrowLower;
-                const keypointsLeftEyebrowUpper = predictions[i].annotations.leftEyebrowUpper;
-                const keypointsLeftEyebrowLower = predictions[i].annotations.leftEyebrowLower;
+            //Silhouette
+            const keypointsSilhouette = annotations.silhouette;
 
-                //Draw everything
-                renderPoints(keypointsLipsUpperOuter);
-                renderPoints(keypointsLipsLowerOuter);
-                renderPoints(keypointsLipsUpperInner);
-                renderPoints(keypointsLipsLipsLowerInner);
-                renderPoints(keypointsSilhouette);
-                renderPoints(keypointsRightEyebrowUpper);
-                renderPoints(keypointsRightEyebrowLower);
-                renderPoints(keypointsLeftEyebrowUpper);
-                renderPoints(keypointsLeftEyebrowLower);
-            }
+            //Eyebrows
+            const keypointsRightEyebrowUpper = annotations.rightEyebrowUpper;
+            const keypointsRightEyebrowLower = annotations.rightEyebrowLower;
+            const keypointsLeftEyebrowUpper = annotations.leftEyebrowUpper;
+            const keypointsLeftEyebrowLower = annotations.leftEyebrowLower;
+
+            //Draw everything
+            renderPoints(keypointsLipsUpperOuter);
+            renderPoints(keypointsLipsLowerOuter);
+            renderPoints(keypointsLipsUpperInner);
+            renderPoints(keypointsLipsLipsLowerInner);
+            renderPoints(keypointsSilhouette);
+            renderPoints(keypointsRightEyebrowUpper);
+            renderPoints(keypointsRightEyebrowLower);
+            renderPoints(keypointsLeftEyebrowUpper);
+            renderPoints(keypointsLeftEyebrowLower);
+
             ctx.stroke();
-            predictions = null;
+            annotations = null;
         }
+        // requestAnimationFrame(render);
     }
-    requestAnimationFrame(render);
 
     function renderPoints(keypoints) {
         var x;
-        var y;        
+        var y;
         for (let i = 0; i < keypoints.length; i++) {
             if (x == undefined && y == undefined) {
                 x = keypoints[i][0];
@@ -60,6 +61,6 @@ onmessage = function (evt) {
                 y = yNext;
                 ctx.moveTo(x, y);
             }
-        }        
+        }
     }
 };

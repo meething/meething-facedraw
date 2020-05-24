@@ -11,7 +11,7 @@ const pid = gunDB._.opt.pid;
 
 gunDB.on("in", function (msg) {
     console.log(msg.event)
-    if(msg.event == "face") {
+    if (msg.event == "face") {
         worker.postMessage([msg.data]);
     }
 });
@@ -49,7 +49,14 @@ const renderPrediction = async () => {
     // array of detected faces from the MediaPipe graph.
     const predictions = await model.estimateFaces(document.querySelector("video"));
     // worker.postMessage([predictions]);
-    out("face", predictions);
+    if (predictions !== undefined && predictions.length > 0) {
+        // ctx.beginPath();
+        // for (let i = 0; i < predictions.length; i++) {
+        out("face", predictions[0].annotations);
+        // worker.postMessage([predictions[0].annotations]);
+        // }
+    }
+
     requestAnimationFrame(renderPrediction);
 };
 
