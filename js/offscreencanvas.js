@@ -33,7 +33,7 @@ onmessage = function (evt) {
             renderPoints(keypointsLipsLowerOuter);
             renderPoints(keypointsLipsUpperInner);
             renderPoints(keypointsLipsLipsLowerInner);
-            renderPoints(keypointsSilhouette);
+            renderPoints(keypointsSilhouette, true);
             renderPoints(keypointsRightEyebrowUpper);
             renderPoints(keypointsRightEyebrowLower);
             renderPoints(keypointsLeftEyebrowUpper);
@@ -44,13 +44,17 @@ onmessage = function (evt) {
         }
     }
 
-    function renderPoints(keypoints) {
+    function renderPoints(keypoints, closePath) {
         var x;
         var y;
+        var xStart;
+        var yStart;
         for (let i = 0; i < keypoints.length; i++) {
             if (x == undefined && y == undefined) {
                 x = keypoints[i][0];
                 y = keypoints[i][1];
+                xStart = x;
+                yStart = y;
                 ctx.moveTo(x, y);
             } else {
                 xNext = keypoints[i][0];
@@ -60,6 +64,9 @@ onmessage = function (evt) {
                 y = yNext;
                 ctx.moveTo(x, y);
             }
+        }
+        if (closePath) {
+            ctx.lineTo(xStart, yStart);
         }
     }
 };
