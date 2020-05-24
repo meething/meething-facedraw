@@ -42,7 +42,6 @@ onmessage = function (evt) {
             ctx.stroke();
             annotations = null;
         }
-        // requestAnimationFrame(render);
     }
 
     function renderPoints(keypoints) {

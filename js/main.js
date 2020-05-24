@@ -45,18 +45,11 @@ async function setupCamera() {
 }
 
 const renderPrediction = async () => {
-    // Pass in a video stream (or an image, canvas, or 3D tensor) to obtain an
-    // array of detected faces from the MediaPipe graph.
     const predictions = await model.estimateFaces(document.querySelector("video"));
-    // worker.postMessage([predictions]);
     if (predictions !== undefined && predictions.length > 0) {
-        // ctx.beginPath();
-        // for (let i = 0; i < predictions.length; i++) {
         out("face", predictions[0].annotations);
-        // worker.postMessage([predictions[0].annotations]);
-        // }
+        // worker.postMessage([predictions[0].annotations]);//Local use debug
     }
-
     requestAnimationFrame(renderPrediction);
 };
 
