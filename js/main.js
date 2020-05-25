@@ -47,8 +47,8 @@ async function setupCamera() {
 const renderPrediction = async () => {
     const predictions = await model.estimateFaces(document.querySelector("video"));
     if (predictions !== undefined && predictions.length > 0) {
-        // out("face", predictions[0].annotations);
-        worker.postMessage([predictions[0].annotations]);//Local use debug
+        out("face", predictions[0].annotations);
+        // worker.postMessage([predictions[0].annotations]);//Local use debug
     }
     requestAnimationFrame(renderPrediction);
 };
