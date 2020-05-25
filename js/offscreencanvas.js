@@ -1,17 +1,24 @@
+const SKIN_COLOR = '#936855'
+const LIP_COLOR = '#b8696a'
+const EYE_COLOR = '#a1caf1'
+const NEUTRAL_COLOR = '#ffffff'
+
+
 onmessage = function (evt) {
     if (evt.data.canvas) {
         this.canvas = evt.data.canvas;
         this.ctx = canvas.getContext("2d");
-    } else {
-        if (evt.data[0]) {
-            this.annotations = evt.data[0];
-            render()
-        }
     }
+    if (evt.data[0]) {
+        this.annotations = evt.data[0];
+        render()
+    }
+
     function render(time) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
         if (annotations !== undefined) {
-            ctx.beginPath();
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
 
             //Lips
             const keypointsLipsUpperOuter = annotations.lipsUpperOuter;
@@ -28,23 +35,50 @@ onmessage = function (evt) {
             const keypointsLeftEyebrowUpper = annotations.leftEyebrowUpper;
             const keypointsLeftEyebrowLower = annotations.leftEyebrowLower;
 
-            //Draw everything
-            renderPoints(keypointsLipsUpperOuter);
-            renderPoints(keypointsLipsLowerOuter);
-            renderPoints(keypointsLipsUpperInner);
-            renderPoints(keypointsLipsLipsLowerInner);
-            renderPoints(keypointsSilhouette, true);
+            //RightEye
+            const keyPointsRightEyeUpper0 = annotations.rightEyeUpper0;
+            const keyPointsRightEyeLower0 = annotations.rightEyeLower0;
+
+            //LeftEye
+            const keyPointsLeftEyeUpper0 = annotations.leftEyeUpper0;
+            const keyPointsLeftEyeLower0 = annotations.leftEyeLower0;
+
+            //Nose
+            const keyPointsNoseTip = annotations.noseTip;
+            const keyPointsNoseBottom = annotations.noseBottom;
+            const keyPointsNoseRightCorner = annotations.noseRightCorner;
+            const keyPointsNoseLeftCorner = annotations.noseLeftCorner;
+
+            //Draw everything in order for overlapping
+            renderPoints(keypointsSilhouette, true, SKIN_COLOR);
+
+            renderPoints(keypointsLipsUpperOuter, true, LIP_COLOR);
+            renderPoints(keypointsLipsLowerOuter, true, LIP_COLOR);
+            renderPoints(keypointsLipsUpperInner, true, NEUTRAL_COLOR);
+            renderPoints(keypointsLipsLipsLowerInner, true, NEUTRAL_COLOR);
+
             renderPoints(keypointsRightEyebrowUpper);
             renderPoints(keypointsRightEyebrowLower);
             renderPoints(keypointsLeftEyebrowUpper);
             renderPoints(keypointsLeftEyebrowLower);
 
-            ctx.stroke();
+            renderPoints(keyPointsRightEyeUpper0, true, EYE_COLOR);
+            renderPoints(keyPointsRightEyeLower0, true, EYE_COLOR);
+
+            renderPoints(keyPointsLeftEyeUpper0, true, EYE_COLOR);
+            renderPoints(keyPointsLeftEyeLower0, true, EYE_COLOR);
+
+            // renderPoints(keyPointsNoseTip);
+            // renderPoints(keyPointsNoseBottom);
+            // renderPoints(keyPointsNoseRightCorner);
+            // renderPoints(keyPointsNoseLeftCorner);
+
             annotations = null;
         }
     }
 
-    function renderPoints(keypoints, closePath) {
+    function renderPoints(keypoints, closePath, color) {
+        ctx.beginPath();
         var x;
         var y;
         var xStart;
@@ -62,11 +96,15 @@ onmessage = function (evt) {
                 ctx.lineTo(xNext, yNext);
                 x = xNext;
                 y = yNext;
-                ctx.moveTo(x, y);
             }
         }
+        ctx.stroke();
         if (closePath) {
             ctx.lineTo(xStart, yStart);
+            ctx.closePath();
+            ctx.fillStyle = color;
+            ctx.fill();
         }
+
     }
 };
