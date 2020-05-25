@@ -1,24 +1,43 @@
-const SKIN_COLOR = '#936855'
-const LIP_COLOR = '#b8696a'
-const EYE_COLOR = '#a1caf1'
-const NEUTRAL_COLOR = '#ffffff'
+const SKIN_COLOR = getRandomColor();//'#936855';
+const LIP_COLOR = getRandomColor();//'#b8696a';
+const EYE_COLOR = getRandomColor();//'#a1caf1';
+const NEUTRAL_COLOR = getRandomColor();//'#ffffff';
+const NOSE_COLOR = getRandomColor();//'#000000';
 
 
-onmessage = function (evt) {
+
+function getRandomColor() {
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+
+
+
+onmessage = async function (evt) {
     if (evt.data.canvas) {
         this.canvas = evt.data.canvas;
         this.ctx = canvas.getContext("2d");
+        // await getImage('../images/boy.png');
     }
     if (evt.data[0]) {
         this.annotations = evt.data[0];
         render()
     }
 
+    async function getImage(url) {
+        const imgblob = await fetch(url)
+            .then(r => r.blob());
+        this.img = await createImageBitmap(imgblob);
+    }
+
     function render(time) {
 
         if (annotations !== undefined) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-
 
             //Lips
             const keypointsLipsUpperOuter = annotations.lipsUpperOuter;
@@ -44,12 +63,16 @@ onmessage = function (evt) {
             const keyPointsLeftEyeLower0 = annotations.leftEyeLower0;
 
             //Nose
+            const keyPointsMidwayBetweenEyes = annotations.midwayBetweenEyes;
             const keyPointsNoseTip = annotations.noseTip;
             const keyPointsNoseBottom = annotations.noseBottom;
             const keyPointsNoseRightCorner = annotations.noseRightCorner;
             const keyPointsNoseLeftCorner = annotations.noseLeftCorner;
+            var keyPointsNose = keyPointsMidwayBetweenEyes.concat(keyPointsNoseRightCorner, keyPointsNoseLeftCorner, keyPointsMidwayBetweenEyes);
 
             //Draw everything in order for overlapping
+            // renderImage(keyPointsNoseTip);
+
             renderPoints(keypointsSilhouette, true, SKIN_COLOR);
 
             renderPoints(keypointsLipsUpperOuter, true, LIP_COLOR);
@@ -68,10 +91,8 @@ onmessage = function (evt) {
             renderPoints(keyPointsLeftEyeUpper0, true, EYE_COLOR);
             renderPoints(keyPointsLeftEyeLower0, true, EYE_COLOR);
 
-            // renderPoints(keyPointsNoseTip);
-            // renderPoints(keyPointsNoseBottom);
-            // renderPoints(keyPointsNoseRightCorner);
-            // renderPoints(keyPointsNoseLeftCorner);
+            renderPoints(keyPointsNose, true, SKIN_COLOR);
+
 
             annotations = null;
         }
@@ -106,5 +127,19 @@ onmessage = function (evt) {
             ctx.fill();
         }
 
+    }
+
+    function renderNose(keypoints, color) {
+        ctx.beginPath();
+        ctx.arc(keypoints[0][0], keypoints[0][1], 1, 0, 2 * Math.PI, false);
+        ctx.fillStyle = SKIN_COLOR;
+        ctx.fill();
+        ctx.lineWidth = 0;
+        ctx.strokeStyle = '#000000';
+        ctx.stroke();
+    }
+
+    function renderImage(keypoints) {
+        ctx.drawImage(this.img, keypoints[0][0] - (this.img.width / 2), keypoints[0][1] - (this.img.height / 2));
     }
 };
