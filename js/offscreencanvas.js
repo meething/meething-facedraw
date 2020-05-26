@@ -4,8 +4,6 @@ const EYE_COLOR = getRandomColor();//'#a1caf1';
 const NEUTRAL_COLOR = getRandomColor();//'#ffffff';
 const NOSE_COLOR = getRandomColor();//'#000000';
 
-
-
 function getRandomColor() {
     var letters = '0123456789ABCDEF';
     var color = '#';
@@ -14,8 +12,6 @@ function getRandomColor() {
     }
     return color;
 }
-
-
 
 onmessage = async function (evt) {
     if (evt.data.canvas) {
